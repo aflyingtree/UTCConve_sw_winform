@@ -19,27 +19,42 @@ namespace UTC时间戳互转
             InitializeComponent();
         }
 
-        DateTime utcBegin = new DateTime(1970, 1, 1, 8, 0, 0, DateTimeKind.Utc);//utc转北京时间所以小时用8
+        DateTime utcBegin = new DateTime(1970, 1, 1, 8, 0, 0, DateTimeKind.Utc);//utc转北京时间,时区小时用8
 
+        /// <summary>
+        /// 格式化输入十六进制数据
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="checkBuffer"></param>
+        /// <returns></returns>
         private int GetInputData(string input, out byte[] checkBuffer)
         {
             StringBuilder inputData = new StringBuilder(input);//将要转化的数据复制为StringBuilder格式便于处理
 
-            //初步进行格式化处理
-            inputData.Replace("0x", "");
-            inputData.Replace(",", "");
-            inputData.Replace(" ", "");
-            inputData.Replace("\r", "");
-            inputData.Replace("\n", "");
-            inputData.Replace("\t", "");
+            try
+            {
+                //初步进行格式化处理
+                inputData.Replace("0x", "");
+                inputData.Replace(",", "");
+                inputData.Replace(" ", "");
+                inputData.Replace("\r", "");
+                inputData.Replace("\n", "");
+                inputData.Replace("\t", "");
 
-            if (inputData.Length == 1)//数据长度为1的时候，在数据前补0
-            {
-                inputData.Insert(0, "0");
+                if (inputData.Length == 1)//数据长度为1的时候，在数据前补0
+                {
+                    inputData.Insert(0, "0");
+                }
+                else if (inputData.Length % 2 != 0)//数据长度为奇数位时，去除最后一位数据
+                {
+                    inputData.Remove(inputData.Length - 1, 1);
+                }
             }
-            else if (inputData.Length % 2 != 0)//数据长度为奇数位时，去除最后一位数据
+            catch //无法转为16进制时，出现异常
             {
-                inputData.Remove(inputData.Length - 1, 1);
+                MessageBox.Show("请输入正确的16进制数据");
+                checkBuffer = null;
+                return -1;//输入的16进制数据错误，无法发送，提示后返回
             }
 
             string checkData = inputData.ToString();//因为下面要使用Substring方法,所以需要转换为String类型
@@ -70,6 +85,11 @@ namespace UTC时间戳互转
         /// <param name="e"></param>
         private void button3_Click(object sender, EventArgs e)
         {
+            if (richTextBox6.Text.Length < 2)
+            {
+                richTextBox5.Text = "输入的数据异常";
+                return;
+            }
             byte[] checkBuffer;
             if (0 != GetInputData(richTextBox6.Text, out checkBuffer))//获取输入的数据
             {
@@ -82,9 +102,14 @@ namespace UTC时间戳互转
             return;
         }
 
+        /// <summary>
+        /// 双击复制数据到粘贴板
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void richTextBox5_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            string willCpy = "-----" + richTextBox5.Text;
+            string willCpy = richTextBox5.Text;
             Clipboard.SetText(willCpy);
         }
 
@@ -92,6 +117,13 @@ namespace UTC时间戳互转
         {
             DateTime inputTime;
             bool ret;
+
+            if (richTextBox4.Text.Length < 2)
+            {
+                richTextBox3.Text = "输入的数据异常";
+                return;
+            }
+
             ret = DateTime.TryParseExact(richTextBox4.Text,
                "yyyy/MM/dd HH:mm:ss", null,
                System.Globalization.DateTimeStyles.None, out inputTime);
@@ -122,6 +154,12 @@ namespace UTC时间戳互转
         {
             DateTime inputTime;
             bool ret;
+
+            if (richTextBox7.Text.Length < 2)
+            {
+                richTextBox8.Text = "输入的数据异常";
+                return;
+            }
             ret = DateTime.TryParseExact(richTextBox7.Text,
                "yyyy/MM/dd HH:mm:ss", null,
                System.Globalization.DateTimeStyles.None, out inputTime);
@@ -158,9 +196,6 @@ namespace UTC时间戳互转
             string hexString = BitConverter.ToString(byteArray).Replace("-", " ");
 
             richTextBox8.Text = hexString;
-
-
-
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -173,12 +208,6 @@ namespace UTC时间戳互转
 
         }
 
-        private void label8_Click(object sender, EventArgs e)
-        {
-            string version = "" +
-                $"v0.0.1 软件第一版,可以正常进行时间格式的转换.";
-            MessageBox.Show(version);
-        }
 
         private void label10_Click(object sender, EventArgs e)
         {
@@ -188,6 +217,19 @@ namespace UTC时间戳互转
         private void label11_Click(object sender, EventArgs e)
         {
             richTextBox7.Text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
+        /// <summary>
+        /// 版本控制
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void label8_Click(object sender, EventArgs e)
+        {
+            string version = "" +
+                $"v0.0.1 软件第一版,可以正常进行时间格式的转换.\r\n" +
+                $"v0.0.2 添加部分异常处理,公开.";
+            MessageBox.Show(version);
         }
     }
 }
