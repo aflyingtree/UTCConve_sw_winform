@@ -233,11 +233,11 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(476, 340);
+            this.label8.Location = new System.Drawing.Point(348, 340);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(41, 12);
+            this.label8.Size = new System.Drawing.Size(197, 12);
             this.label8.TabIndex = 15;
-            this.label8.Text = "v0.0.1";
+            this.label8.Text = "v0.0.2 吾爱破解论坛 tianlovetian";
             this.label8.Click += new System.EventHandler(this.label8_Click);
             // 
             // label10
